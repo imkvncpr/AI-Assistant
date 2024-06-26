@@ -1,7 +1,8 @@
 import pyttsx3
 import datetime
 import speech_recognition as sr
-import pyaudio as pya
+import wikipedia as wiki
+import smtplib as smtp
 
 
 engine = pyttsx3.init()
@@ -10,30 +11,31 @@ def speak(audio):
     engine.say(audio)
     engine.runAndWait()
     
-speak("This is the AI assistant")
+#speak("This is the AI assistant")
 
 
 def time():
     Time = datetime.datetime.now().strftime("%I:%M:%S")
+    speak("The present time is")
     speak(Time)
 
-time()
+#time()
 
 def date():
     year = int(datetime.datetime.now().year)
     month = int(datetime.datetime.now().month)
     day = int(datetime.datetime.now().day)
+    speak("Todays date is currently")
     speak(day)
     speak(month)
     speak(year)
-date()
+    
+#date()
 
 
 def greeting():
     speak("Greetings")
-    speak("The present time is")
     time()
-    speak("Todays date is currently")
     date()
     hour = datetime.datetime.now().hour
     if hour >=6 and hour <12:
@@ -47,7 +49,7 @@ def greeting():
         
     speak("I am here to assist")
     
-greeting()
+#greeting()
 
 
 def voiceCommand():
@@ -68,4 +70,47 @@ def voiceCommand():
         return("none")
     return(query)
 
-voiceCommand()
+def sendEmail(to, content):
+    server = smtp.SMTP('smtp.outlook.com', 587)
+    server.ehlo
+    server.starttls()
+    server.login('abcd@outlook.com', 'ai-assit1!')
+    server.sendmail('abcd@outlook.com', to, content)
+    server.close()
+
+#voiceCommand()
+
+if __name__ == "__main__":
+    greeting()
+    while True:
+        query = voiceCommand().lower()
+        
+        if 'time' in query:
+            time()
+            
+        elif 'date' in query:
+            date()
+            
+        elif 'wiki' in query:
+            speak("searching")
+            query = query.replace("wiki", "")
+            result = wiki.summary(query, sentences=2)
+            print(result)
+            speak(result)
+            
+        elif 'send email' in query:
+            try:
+                speak('What should it say?')
+                content = voiceCommand()
+                to = 'xyx@gmail.com'
+                #sendEmail(to, content)
+                speak(content)
+                #speak("Email has been sent!")
+                
+                
+            except Exception as e:
+                print(e)
+                speak("Unable to send email")
+        elif 'exit' in query or "thank you" in query:
+            quit()
+            

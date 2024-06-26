@@ -1,6 +1,8 @@
 import pyttsx3
 import datetime
 import speech_recognition as sr
+import pyaudio as pya
+
 
 engine = pyttsx3.init()
 
@@ -26,6 +28,7 @@ def date():
     speak(year)
 date()
 
+
 def greeting():
     speak("Greetings")
     speak("The present time is")
@@ -46,6 +49,7 @@ def greeting():
     
 greeting()
 
+
 def voiceCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -54,9 +58,14 @@ def voiceCommand():
         audio = r.listen(source)
     try:
         print("Recognizing...")
-        query = r.recognize_google_cloud(audio ='en-us')
+        query = r.recognize_google(audio, language='en-us')
         print(query)
            
     except Exception as e:
         print(e)
+        speak("I did not understand. Can you please repeat?")
         
+        return("none")
+    return(query)
+
+voiceCommand()

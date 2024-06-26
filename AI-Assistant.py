@@ -54,7 +54,7 @@ def voiceCommand():
         audio = r.listen(source)
     try:
         print("Recognizing...")
-        query = r.recognize_google_cloud(audio language="en-us")
+        query = r.recognize_google_cloud(audio ='en-us')
         print(query)
            
     except Exception as e:

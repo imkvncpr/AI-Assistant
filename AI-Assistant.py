@@ -3,9 +3,13 @@ import datetime
 import speech_recognition as sr
 import wikipedia as wiki
 import smtplib as smtp
+import webbrowser as wb
+import os
+from PIL import Image, ImageGrab
+import psutil
 
 
-engine = pyttsx3.init()
+engine = pyttsx3.init('sapi5') 
 
 def speak(audio):
     engine.say(audio)
@@ -80,6 +84,17 @@ def sendEmail(to, content):
 
 #voiceCommand()
 
+def screenshot():
+    img = ImageGrab.grab()
+    img.save('C:\\Users\\abcd\\OneDrive\\Pictures\\Screenshots\\AI-Assistant') #Test Path
+    
+def cpu():
+    usage = str(psutil.cpu_percent())
+    speak('CPU is presently at' + usage)
+    battery = psutil.sensors_battery()
+    speak('Power level is presently at')
+    speak(battery.percent)
+    
 if __name__ == "__main__":
     greeting()
     while True:
@@ -104,13 +119,72 @@ if __name__ == "__main__":
                 content = voiceCommand()
                 to = 'xyx@gmail.com'
                 #sendEmail(to, content)
-                speak(content)
+                speak(content) #Use in testing
                 #speak("Email has been sent!")
-                
                 
             except Exception as e:
                 print(e)
                 speak("Unable to send email")
+                
+        elif 'google search' in query:
+            speak("What would you like me to search?")
+            search_query = voiceCommand().lower()
+            try:
+                url = f"https://www.google.com/search?q={search_query}"
+                wb.open(url)
+                speak(f"Here are the search results for {search_query}")
+            except Exception as e:
+                print(e)
+                speak("An error occurred while trying to search Google.")
+                
+        elif 'logout'in query:
+            os.system("shutdown -l")
+            
+        elif 'restart' in query:
+            os.system("shutdown /r /t 1")
+            
+        elif 'shutdown' in query:
+            os.system("shutdown /s /t 1")
+            
+        elif 'play song' in query:
+            songs_dir = 'D:\\Music'
+            songs = os.listdir(songs_dir)
+            os.startfile(os.path.join(songs_dir, songs[0]))
+            
+        elif 'please take note' in query:
+            speak("sure thing. I'm listening...")
+            data = voiceCommand()
+            speak('Ok. Just to confirm. You said' + data + 'Is that correct?')
+            confirmation = voiceCommand().lower()
+            if 'yes' in confirmation:
+                with open('data.txt', 'w') as note:
+                    note.write(data)
+                speak("Note saved successfully.")  
+                note.close()
+            else:
+                speak("Alright, let's try that again.")           
+
+        elif 'read back notes' in query:
+            try:
+                with open('data.txt', 'r') as note:
+                     content = note.read()
+                if content:
+                    speak("Sure thing. Here are your notes: " + content)
+                else:
+                    speak("The note file is empty.")
+            except FileNotFoundError:
+                speak("I'm sorry, but I couldn't find any saved notes.")
+            except Exception as e:
+                speak("An error occurred while trying to read the notes.")
+                print(f"Error: {e}")   
+                     
+        elif 'screenshot' in query:
+            screenshot()
+            speak("Done!")
+            
+        elif 'cpu' in query:
+            cpu()
+            
         elif 'exit' in query or "thank you" in query:
             quit()
             
